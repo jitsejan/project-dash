@@ -16,6 +16,7 @@ def get_cli():
     argp.add_argument("-j", "--jira_retrieve", action="store_true", default=False)
     argp.add_argument("-g", "--github_retrieve", action="store_true", default=False)
     argp.add_argument("-o", "--output", action="store_true", default=False)
+    argp.add_argument("-s", "--store", action="store_true", default=False)
     args = argp.parse_args()
     return args
 
@@ -34,6 +35,9 @@ def main(config):
         )
         sprints = retr.get_sprints_dataframe()
         issues = retr.get_issues_dataframe()
+        if config["store"]:
+            issues.to_pickle("jira_issues.df")
+            sprints.to_pickle("jira_sprints.df")
         if config["output"]:
             print(issues)
             print(sprints)
@@ -43,6 +47,9 @@ def main(config):
         )
         branches = retr.get_branches_dataframe()
         pulls = retr.get_pulls_dataframe()
+        if config["store"]:
+            branches.to_pickle("github_branches.df")
+            pulls.to_pickle("github_pulls.df")
         if config["output"]:
             print(branches)
             print(pulls)

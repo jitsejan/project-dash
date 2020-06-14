@@ -39,7 +39,10 @@ class JiraRetriever:
         return self.jira.projects()
 
     def get_issues_dataframe(self):
-        return self._get_frame_from_issues(self._get_issues_for_project())
+        df = self._get_frame_from_issues(self._get_issues_for_project())
+        timecols = ['created', 'updated']
+        df[timecols] = df[timecols].astype("datetime64[ns]")
+        return df
 
     def get_sprints_dataframe(self):
         return pd.DataFrame(self._get_sprints_for_board_id())
