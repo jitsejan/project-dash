@@ -38,7 +38,13 @@ class JiraRetriever:
     def get_projects(self):
         return self.jira.projects()
 
-    def get_sprints_for_board_id(self, board_id=None):
+    def get_issues_dataframe(self):
+        return self._get_frame_from_issues(self._get_issues_for_project())
+
+    def get_sprints_dataframe(self):
+        return pd.DataFrame(self._get_sprints_for_board_id())
+
+    def _get_sprints_for_board_id(self, board_id=None):
         sprint_info = []
         for sprint in self.jira.sprints(
             board_id=board_id if board_id else self.board_id
@@ -46,15 +52,14 @@ class JiraRetriever:
             sprint_info.append(
                 self.jira.sprint_info(board_id=board_id, sprint_id=sprint.id)
             )
-        return pd.DataFrame(sprint_info)
+        return sprint_info
 
-    def get_issues_for_project(self, project=None):
-        issues = self.jira.search_issues(
+    def _get_issues_for_project(self, project=None):
+        return self.jira.search_issues(
             f"project={project if project else self.project}", maxResults=None
         )
-        return self._get_frame_from_issues(issues)
 
-    def get_issues_for_sprint(self, sprint):
+    def _get_issues_for_sprint(self, sprint):
         return self.jira.search_issues(f"Sprint = '{sprint}'")
 
     def _get_jira_client(self):
