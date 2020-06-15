@@ -14,7 +14,9 @@ class GitHubRetriever:
         return pd.DataFrame(self._get_branches_for_all_repos())
 
     def get_pulls_dataframe(self):
-        return pd.DataFrame(self._get_pulls_for_all_repos())
+        dataframe = pd.DataFrame(self._get_pulls_for_all_repos())
+        dataframe['number'] = dataframe['number'].astype('str')
+        return dataframe
 
     def _get_branches_for_all_repos(self):
         branches = []
