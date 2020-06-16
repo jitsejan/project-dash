@@ -146,6 +146,20 @@ testing = ["pytest-sugar (0.9.2)", "pytest-mock (2.0.0)", "lxml (4.5.0)", "selen
 
 [[package]]
 category = "main"
+description = "Bootstrap themed components for use in Plotly Dash"
+name = "dash-bootstrap-components"
+optional = false
+python-versions = "*"
+version = "0.10.2"
+
+[package.dependencies]
+dash = ">=1.9.0"
+
+[package.extras]
+pandas = ["numpy", "pandas"]
+
+[[package]]
+category = "main"
 description = "Core component suite for Dash"
 name = "dash-core-components"
 optional = false
@@ -1058,7 +1072,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "9a5122ae61b2066028ff8ddfb399929bddecec0e98883db31dc5df1a27ebdb0a"
+content-hash = "18b7cd48ce06c399196ffad3e0e1bd53ac838e6d61e965238ff327a6bc2cf191"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1142,6 +1156,9 @@ confuse = [
 ]
 dash = [
     {file = "dash-1.12.0.tar.gz", hash = "sha256:aa9bed7b7d85b9bdf4ac1669d206a86024098d1b2b3a88b0bce12012979939a5"},
+]
+dash-bootstrap-components = [
+    {file = "dash-bootstrap-components-0.10.2.tar.gz", hash = "sha256:ba52f55487b26ca8cbf589b5558f8087e9bbb4847d44d4feb229250558a7fcc8"},
 ]
 dash-core-components = [
     {file = "dash_core_components-1.10.0.tar.gz", hash = "sha256:30b90cf43da5ed1a8cd08bb23ee90fb9930b534856672906541cac014fed1baf"},

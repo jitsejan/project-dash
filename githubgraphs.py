@@ -2,11 +2,11 @@
 import base64
 import pandas as pd
 import plotly.express as px
+import dash_table as dt
+
 import plotly.graph_objects as go
+from datetime import datetime
 
-
-image_filename = 'images/github.PNG'
-github_logo = base64.b64encode(open(image_filename, 'rb').read())
 
 pulls = pd.read_pickle("github_pulls.df")
 pulls['changes'] = pulls['deletions'] + pulls['additions']
@@ -18,12 +18,13 @@ fig_pr_per_person = go.Figure(data=[go.Pie(labels=pulls_per_person['user'],
 values=pulls_per_person['title'], textinfo='label+percent',
                       insidetextorientation='radial', hole=.3
                             )])
+fig_pr_per_person.update_layout(showlegend=False)
 # Changes per person
 pulls_per_person = pulls.groupby("user", as_index=False).sum()[['user', 'changes']]
 fig_changes_per_person = go.Figure(data=[go.Pie(labels=pulls_per_person['user'], values=pulls_per_person['changes'], textinfo='label+value',
                              insidetextorientation='radial', hole=.3
                             )])
-
+fig_changes_per_person.update_layout(showlegend=False)
 # Stats for finished pulls
 done_pulls = pulls[pulls['closed_at'].notnull()]
 fig_done_pulls = px.bar(done_pulls, x="number", y='duration', color="user", hover_data={"title"})
@@ -85,3 +86,15 @@ fig_changes_in_pr_by_week.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
 )
 fig_changes_in_pr_by_week.update_traces(mode="markers+lines")
+
+# Tables
+def get_table(dataframe):
+    return dt.DataTable(columns=[{"name": i, "id": i, 'deletable': False} for i in dataframe.columns],
+        data=dataframe.to_dict('records'),
+        css=[{'selector': '.dash-cell div.dash-cell-value', 'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'}],
+    )
+
+open_filter = (pulls.state == "open")
+pulls.loc[open_filter, 'duration'] = datetime.now() - pulls['created_at']
+open_pulls = pulls[open_filter][['number', 'title', 'user', 'created_at', 'duration']]
+open_pulls_table = get_table(open_pulls)
