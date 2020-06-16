@@ -1,10 +1,9 @@
 """ jiragraphs.py """
 import base64
+from datetime import datetime
+import dash_table as dt
 import pandas as pd
 import plotly.express as px
-
-image_filename = 'images/jira.PNG'
-jira_logo = base64.b64encode(open(image_filename, 'rb').read())
 
 colors = dict(
     # graphtext='rgb(242, 158, 57)'
@@ -41,3 +40,26 @@ fig_done_issues.update_layout(
     plot_bgcolor='rgba(0,0,0,0)',
     font=preffont
 )
+
+
+
+def get_table(dataframe):
+    return dt.DataTable(columns=[{"name": i, "id": i, 'deletable': False} for i in dataframe.columns],
+        data=dataframe.to_dict('records'),
+        css=[{'selector': '.dash-cell div.dash-cell-value', 'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'}],
+    )
+
+open_filter = (issues.status_name == "In Progress") & (issues.issuetype_name == "Story")
+issues.loc[open_filter, 'duration'] = datetime.now() - issues['updated']
+open_issues = issues[open_filter][['key', 'assignee_displayname', 'updated', 'duration']]
+open_issues_table = get_table(open_issues)
+
+review_filter = (issues.status_name == "In Review") & (issues.issuetype_name == "Story")
+issues.loc[review_filter, 'duration'] = datetime.now() - issues['updated']
+review_issues = issues[review_filter][['key', 'assignee_displayname', 'updated', 'duration']]
+review_issues_table = get_table(review_issues)
+
+todo_filter = (issues.status_name == "To Do") & (issues.issuetype_name == "Story")
+issues.loc[todo_filter, 'duration'] = datetime.now() - issues['updated']
+todo_issues = issues[todo_filter][['key', 'assignee_displayname', 'updated', 'duration']]
+todo_issues_table = get_table(todo_issues)

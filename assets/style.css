@@ -1,0 +1,22 @@
+body {
+}
+h3 {
+    padding-top: 10px;
+}
+img {
+    padding: 5px;
+}
+.container-fluid{
+    padding: 0px;
+}
+
+.navbar-dark .navbar-nav .dropdown-item  .nav-link {
+    color: black;
+}
+
+.row-img{
+    margin: 0px auto;
+    height: 70px;
+    display: block;
+    padding: 10px;
+}
