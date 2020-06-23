@@ -40,7 +40,7 @@ class JiraRetriever:
 
     def get_issues_dataframe(self):
         df = self._get_frame_from_issues(self._get_issues_for_project())
-        timecols = ['created', 'updated']
+        timecols = ["created", "updated"]
         df[timecols] = df[timecols].astype("datetime64[ns]")
         return df
 

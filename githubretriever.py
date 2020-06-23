@@ -1,11 +1,11 @@
 """ githubretriever """
-import pandas as pd
 import os
+
+import pandas as pd
 from github import Github
 
 
 class GitHubRetriever:
-
     def __init__(self, repos: list = []):
         self._repos = repos
         self._git = self._get_github_client()
@@ -15,7 +15,7 @@ class GitHubRetriever:
 
     def get_pulls_dataframe(self):
         dataframe = pd.DataFrame(self._get_pulls_for_all_repos())
-        dataframe['number'] = dataframe['number'].astype('str')
+        dataframe["number"] = dataframe["number"].astype("str")
         return dataframe
 
     def _get_branches_for_all_repos(self):
@@ -24,7 +24,7 @@ class GitHubRetriever:
             repo = self._get_repo(repo_name=repo_name)
             branches.extend(self._get_branches_for_repo(repo))
         return branches
-            
+
     def _get_branches_for_repo(self, repo):
         for branch in repo.get_branches():
             yield {
@@ -63,7 +63,7 @@ class GitHubRetriever:
 
     def _get_repo(self, repo_name: str):
         return self.git.get_repo(repo_name)
-    
+
     @property
     def git(self):
         return self._git
