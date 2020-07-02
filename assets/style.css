@@ -20,3 +20,22 @@ img {
     display: block;
     padding: 10px;
 }
+
+li.list-group-item{
+    border: 0px;
+    margin: 1px;
+}
+li.list-group-item img{
+    float: left;
+}
+h5.list-group-item-heading{
+    font-size: 48px;
+    float: left;
+    padding-top: 2px;
+}
+p.list-group-item-text{
+    float: left;
+    color: gray;
+    font-size: 12px;
+    margin-top: 32px;
+}
