@@ -65,6 +65,9 @@ class JiraRetriever:
     def _get_issues_for_sprint(self, sprint):
         return self.jira.search_issues(f"Sprint = '{sprint}'")
 
+    def _get_issue_with_changelog(self, issue):
+        return self.jira.issue(issue=issue, expand='changelog')
+
     def _get_jira_client(self):
         return JIRA(self.url, basic_auth=(self.user, self.password))
 

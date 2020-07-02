@@ -30,7 +30,7 @@ layout = html.Div(
                         html.Div(
                             [
                                 html.H4(
-                                    f"Average number of days to close a ticket", style={"textAlign": "center",}
+                                    f"Number of days to close a ticket", style={"textAlign": "center",}
                                 ),
                                 dbc.Row(
                                 [
@@ -41,18 +41,19 @@ layout = html.Div(
                                                 [
                                                     dbc.Col(
                                                         html.H1(
-                                                            f"{math.ceil(duration_stats['average'])}",  style={"textAlign": "right"}
+                                                            f"{math.ceil(duration_stats['average'])}",
                                                         ),
-                                                        width={"size": 5, "offset": 1},
+                                                        id="day-average",
+                                                        width={"size": 1, "offset": 2},
                                                     ),
                                                     dbc.Col(
-                                                        html.Div(
-                                                            [
-                                                                "Days on average"
-                                                            ]
-                                                        ),
-                                                        width={"size": 6},
-                                                    ),
+                                                        html.Div([
+                                                            html.H1("Days on average"),
+                                                            html.H2("From Created to Done"),
+                                                        ],
+                                                        id="day-average-title"),
+                                                        width={"size": 9, "offset": 0},
+                                                    )
                                                 ]),
                                             ]
                                         ),
@@ -101,45 +102,7 @@ layout = html.Div(
                         md=12,
                         xs=12,
                     )
-                ),
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.Div(
-                                [
-                                    html.H4(
-                                        "Issues per person",
-                                        style={"textAlign": "center",},
-                                    ),
-                                    dcc.Graph(
-                                        id="jira-issues-per-person",
-                                        figure=fig_issues_per_person,
-                                    ),
-                                ]
-                            ),
-                            width=6,
-                            lg=6,
-                            md=6,
-                            xs=12,
-                        ),
-                        dbc.Col(
-                            html.Div(
-                                [
-                                    html.H4(
-                                        "Done issues", style={"textAlign": "center",}
-                                    ),
-                                    dcc.Graph(
-                                        id="jira-done-issues-temp", figure=fig_issues_per_person,
-                                    ),
-                                ]
-                            ),
-                            width=6,
-                            lg=6,
-                            md=6,
-                            xs=12,
-                        ),
-                    ]
-                ),
+                )
             ]
         ),
     ]
