@@ -3,7 +3,7 @@ In this project I will gather data from different sources to create a dashboard 
 
 ## Integrations
 - Jira :white_check_mark:
-- Github :construction_worker:
+- Github :white_check_mark:
 - CircleCI :calendar:
 
 ## Configuration
