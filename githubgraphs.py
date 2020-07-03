@@ -9,7 +9,40 @@ import plotly.graph_objects as go
 
 pulls = pd.read_pickle("github_pulls.df")
 pulls["changes"] = pulls["deletions"] + pulls["additions"]
-pulls["duration"] = (pulls["closed_at"] - pulls["created_at"]).astype("timedelta64[h]")
+pulls["duration"] = (pulls["closed_at"] - pulls["created_at"]).dt.days
+
+done_pulls = pulls[pulls['closed_at'].notnull()]
+num_done = done_pulls.count()['number']
+duration_stats = done_pulls.agg({'duration': ['average', 'max', 'min']}).to_dict()['duration']
+
+
+
+# Duration of pull requests | Scatter
+fig_done_pulls_scatter = px.scatter(
+    data_frame=done_pulls,
+    x="closed_at",
+    y="duration",
+    color="user",
+    hover_data={"title"},
+    size="changed_files",
+    # color_discrete_map=color_discrete_map
+)
+fig_done_pulls_scatter.update_layout(
+    xaxis={
+        'title': "Closing date",
+    },
+    yaxis={
+        'title': "Duration (days)",
+    },
+    paper_bgcolor="rgba(255,255,255,1)",
+    plot_bgcolor="rgba(0,0,0,0.1)",
+    legend_title_text='',
+    xaxis_tickformat = '%d %b <br>%Y',
+)
+fig_done_pulls_scatter.update_xaxes(
+    tickangle=45,
+    showgrid=True,
+)
 
 # Pull requests per person
 pulls_per_person = pulls.groupby("user", as_index=False).count()[["user", "title"]]
