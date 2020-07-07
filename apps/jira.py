@@ -103,7 +103,29 @@ layout = html.Div(
                         xs=12,
                     )
                 )
-            ]
+            ], className="graph-container"
+        ),
+        html.Div(
+            [
+                dbc.Row(
+                    dbc.Col(
+                        html.Div(
+                            [
+                                html.H4(
+                                    f"Days per state", style={"textAlign": "center",}
+                                ),
+                                dcc.Graph(
+                                    id="jira-par-process", figure=fig_par_process,
+                                )
+                            ]
+                        ),
+                        width=12,
+                        lg=12,
+                        md=12,
+                        xs=12,
+                    )
+                )
+            ], className="graph-container"
         ),
     ]
 )

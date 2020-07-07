@@ -9,7 +9,8 @@ import plotly.graph_objects as go
 
 color_discrete_map = {
     'Bug': 'rgb(255, 86, 48)',
-    'Story': 'rgb(54, 179, 126)'}
+    'Story': 'rgb(54, 179, 126)'
+}
 
 preffont = dict(
     size=10,
@@ -124,3 +125,61 @@ todo_issues = issues[todo_filter][
     ["key", "assignee_displayname", "updated", "duration"]
 ]
 todo_issues_table = get_table(todo_issues)
+
+# Parallel coordinates
+# --------------------
+# Normalize the historical data
+hdf = pd.json_normalize(issues['history'].apply(pd.Series).stack().to_frame('histories').reset_index(level=0).rename(columns={'level_0': 'index'}).to_dict(orient='records')).set_index('index')
+hdf = hdf[hdf['histories.from'] != hdf['histories.to']]
+hdf = issues.join(hdf).drop('history', axis=1)
+# Add transition column
+hdf['transition'] = hdf['histories.from'] + "-" + hdf['histories.to']
+# Add the Created column as additional transition
+cdf = hdf[['key', 'created']]
+hdf['histories.date'] = pd.to_datetime(hdf['histories.date'])
+cdf['histories.date'] = pd.to_datetime(cdf['created'])
+cdf['transition'] = "Created"
+cdf.drop('created', axis=1, inplace=True)
+# Combine the two transition frames
+tdf = hdf[['key', 'histories.date', 'transition']]
+tdf = pd.concat([tdf, cdf])
+tdf.dropna(subset=['histories.date'], inplace=True)
+tdf['histories.date'] = pd.to_datetime(tdf['histories.date'], utc=True)
+tdf.drop_duplicates(['key', 'transition'], inplace=True)
+# Pivot the data and calculate the three states
+pdf = tdf.pivot(index='key', values='histories.date', columns='transition')
+mask = pdf['In Progress-In Review'].notnull() & pdf['To Do-In Progress'].notnull() & pdf['In Progress-In Review'].notnull()
+mdf = pdf[mask]
+mdf['in_todo'] = mdf['To Do-In Progress'] - mdf['Created']
+mdf['in_progress'] = mdf['In Progress-In Review'] - mdf['To Do-In Progress']
+mdf['in_review'] = mdf['In Review-Done'] - mdf['In Progress-In Review']
+# Select columns
+mdf = mdf[['in_todo', 'in_progress', 'in_review']]
+# Convert timedeltas to days
+mdf = mdf.applymap(lambda x: x.days)
+mdf.reset_index(inplace=True)
+# Add issuetype to table
+mdf = mdf.join(hdf[['issuetype_name']]).drop_duplicates()
+# Add is_bug boolean to table
+mdf['is_bug'] = mdf['issuetype_name'] == 'Bug'
+# Calculate the min and max values
+rmin = mdf[['in_todo', 'in_progress', 'in_review']].values.min()
+rmax = mdf[['in_todo', 'in_progress', 'in_review']].values.max()
+
+fig_par_process = go.Figure(data=
+    go.Parcoords(
+        line = dict(color = mdf['is_bug'],
+                    colorscale = [[0, "rgb(54, 179, 126)"], [1, "rgb(255, 86, 48)"]]),
+        dimensions = list([
+            dict(range = [rmin, rmax],
+                 label = 'Todo',
+                 values = mdf['in_todo']),
+            dict(range = [rmin, rmax],
+                 label = 'In progress',
+                 values = mdf['in_progress']),
+            dict(range = [rmin, rmax],
+                 label = 'In review',
+                 values = mdf['in_review']),
+        ]),
+    )
+)

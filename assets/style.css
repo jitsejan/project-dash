@@ -53,3 +53,6 @@ p.list-group-item-text{
     text-transform: none;
     letter-spacing: 0px;
 }
+.graph-container {
+    margin-top: 50px;
+}
