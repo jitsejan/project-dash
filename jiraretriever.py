@@ -9,7 +9,6 @@ from jira import JIRA
 
 
 class JiraRetriever:
-    ESTIMATE_FIELD = "customfield_10008"
     SELECT_COLS = [
         "project_key",
         "sprint_name",
@@ -28,6 +27,7 @@ class JiraRetriever:
         "status_name",
         "created",
         "updated",
+        "history",
     ]
 
     def __init__(self, board_id=None, project=None):
@@ -57,9 +57,24 @@ class JiraRetriever:
             )
         return sprint_info
 
+    @staticmethod
+    def _get_history_for_issue(histories):
+        changes = []
+        for history in histories:
+            for item in history.get('items'):
+                if item.get('field') == 'status':
+                    changes.append({
+                        'from': item.get('fromString'),
+                        'to': item.get('toString'),
+                        'date': history.get('created'),
+                    })
+        return changes 
+
     def _get_issues_for_project(self, project=None):
         return self.jira.search_issues(
-            f"project={project if project else self.project}", maxResults=None
+            f"project={project if project else self.project}",
+            maxResults=None,
+            expand='changelog'
         )
 
     def _get_issues_for_sprint(self, sprint):
@@ -84,6 +99,7 @@ class JiraRetriever:
         df.columns = [
             col.replace("fields.", "").replace(".", "_").lower() for col in df.columns
         ]
+        df['history'] = df['changelog_histories'].apply(self._get_history_for_issue)
         df["sprint"] = df["sprint"].apply(lambda x: x[0] if x is not None else x)
         df["sprint_name"] = df["sprint"].str.extract(
             r"name=(?P<sprint_name>.*),startDate"
