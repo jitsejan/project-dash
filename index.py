@@ -146,6 +146,7 @@ def toggle_active_links(pathname):
         return [False, False, True]
     return False, False, False
 
+app.title = "Project Dash"
 
 if __name__ == "__main__":
     app.run_server(debug=True)
