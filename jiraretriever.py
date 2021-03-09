@@ -41,7 +41,7 @@ class JiraRetriever:
     def get_issues_dataframe(self):
         df = self._get_frame_from_issues(self._get_issues_for_project())
         timecols = ["created", "updated"]
-        df[timecols] = df[timecols].astype("datetime64[ns]")
+        df[timecols] = df[timecols].apply(pd.to_datetime)
         return df
 
     def get_sprints_dataframe(self):
@@ -91,7 +91,7 @@ class JiraRetriever:
         df = pd.json_normalize(data=data)
         df = df.rename(
             columns={
-                "fields.customfield_10008": "estimate",
+                "fields.customfield_11715": "estimate",
                 "fields.customfield_10000": "sprint",
             }
         )
@@ -124,7 +124,7 @@ class JiraRetriever:
 
     @property
     def password(self):
-        return os.getenv("JIRA_PASSWORD")
+        return os.getenv("JIRA_API_KEY")
 
     @property
     def url(self):
