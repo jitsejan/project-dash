@@ -1,8 +1,9 @@
+import math
+
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import math
 
 from app import app
 from githubgraphs import *
@@ -18,7 +19,11 @@ else:
                 [
                     html.Img(
                         src="assets/github.PNG",
-                        style={"width": "200px", "margin": "0px auto", "display": "block",},
+                        style={
+                            "width": "200px",
+                            "margin": "0px auto",
+                            "display": "block",
+                        },
                     )
                 ]
             ),
@@ -29,71 +34,97 @@ else:
                             html.Div(
                                 [
                                     html.H4(
-                                        f"Number of days to close a pull request", style={"textAlign": "center",}
+                                        f"Number of days to close a pull request",
+                                        style={
+                                            "textAlign": "center",
+                                        },
                                     ),
                                     dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            html.Div(
-                                                [
-                                                dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                html.Div(
                                                     [
-                                                        dbc.Col(
-                                                            html.H1(
-                                                                f"{math.ceil(duration_stats['average'])}",
-                                                            ),
-                                                            id="day-average",
-                                                            width={"size": 1, "offset": 2},
+                                                        dbc.Row(
+                                                            [
+                                                                dbc.Col(
+                                                                    html.H1(
+                                                                        f"{math.ceil(duration_stats['average'])}",
+                                                                    ),
+                                                                    id="day-average",
+                                                                    width={
+                                                                        "size": 1,
+                                                                        "offset": 2,
+                                                                    },
+                                                                ),
+                                                                dbc.Col(
+                                                                    html.Div(
+                                                                        [
+                                                                            html.H1(
+                                                                                "Day(s) on average"
+                                                                            ),
+                                                                            html.H2(
+                                                                                "From Created to Merged"
+                                                                            ),
+                                                                        ],
+                                                                        id="day-average-title",
+                                                                    ),
+                                                                    width={
+                                                                        "size": 9,
+                                                                        "offset": 0,
+                                                                    },
+                                                                ),
+                                                            ]
                                                         ),
-                                                        dbc.Col(
-                                                            html.Div([
-                                                                html.H1("Day(s) on average"),
-                                                                html.H2("From Created to Merged"),
-                                                            ],
-                                                            id="day-average-title"),
-                                                            width={"size": 9, "offset": 0},
-                                                        )
-                                                    ]),
-                                                ]
-                                            ),
-                                            width=6,
-                                            lg=6,
-                                            md=6,
-                                            xs=12,
-                                        ),
-                                        dbc.Col(
-                                        dbc.ListGroup(
-                                            [
-                                                dbc.ListGroupItem(
-                                                    [
-                                                        html.Img(
-                                                            src="assets/github_pr.PNG",
-                                                            style={"width": "64px"},
-                                                        ),
-                                                        dbc.ListGroupItemHeading(f"{num_done}"),
-                                                        dbc.ListGroupItemText("pull requests"),
                                                     ]
                                                 ),
-                                                # dbc.ListGroupItem(
-                                                #     [
-                                                #         html.Img(
-                                                #             src="assets/jira_story.SVG",
-                                                #             style={"width": "64px"},
-                                                #         ),
-                                                #         dbc.ListGroupItemHeading(f"{num_done['Story']} "),
-                                                #         dbc.ListGroupItemText("stories"),
-                                                #     ]
-                                                # ),
-                                            ], horizontal=True),
-                                            width=6,
-                                            lg=6,
-                                            md=6,
-                                            xs=12,
-                                        ),
-                                    ]),
+                                                width=6,
+                                                lg=6,
+                                                md=6,
+                                                xs=12,
+                                            ),
+                                            dbc.Col(
+                                                dbc.ListGroup(
+                                                    [
+                                                        dbc.ListGroupItem(
+                                                            [
+                                                                html.Img(
+                                                                    src="assets/github_pr.PNG",
+                                                                    style={
+                                                                        "width": "64px"
+                                                                    },
+                                                                ),
+                                                                dbc.ListGroupItemHeading(
+                                                                    f"{num_done}"
+                                                                ),
+                                                                dbc.ListGroupItemText(
+                                                                    "pull requests"
+                                                                ),
+                                                            ]
+                                                        ),
+                                                        # dbc.ListGroupItem(
+                                                        #     [
+                                                        #         html.Img(
+                                                        #             src="assets/jira_story.SVG",
+                                                        #             style={"width": "64px"},
+                                                        #         ),
+                                                        #         dbc.ListGroupItemHeading(f"{num_done['Story']} "),
+                                                        #         dbc.ListGroupItemText("stories"),
+                                                        #     ]
+                                                        # ),
+                                                    ],
+                                                    horizontal=True,
+                                                ),
+                                                width=6,
+                                                lg=6,
+                                                md=6,
+                                                xs=12,
+                                            ),
+                                        ]
+                                    ),
                                     dcc.Graph(
-                                        id="github-done-pulls", figure=fig_done_pulls_scatter,
-                                    )
+                                        id="github-done-pulls",
+                                        figure=fig_done_pulls_scatter,
+                                    ),
                                 ]
                             ),
                             width=12,
@@ -109,7 +140,9 @@ else:
                                     [
                                         html.H4(
                                             "Pull requests per person",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
                                             id="github-pr-per-person",
@@ -127,7 +160,9 @@ else:
                                     [
                                         html.H4(
                                             "Changes per person",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
                                             id="github-changes-per-person",
@@ -149,10 +184,13 @@ else:
                                     [
                                         html.H4(
                                             "Duration of a pull request",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
-                                            id="github-done-pulls", figure=fig_done_pulls,
+                                            id="github-done-pulls",
+                                            figure=fig_done_pulls,
                                         ),
                                     ]
                                 ),
@@ -166,7 +204,9 @@ else:
                                     [
                                         html.H4(
                                             "Changes per pull request",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
                                             id="github-changes-in-pr",
@@ -188,7 +228,9 @@ else:
                                     [
                                         html.H4(
                                             "Average duration per week per PR",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
                                             id="github-duration-pr-by-week",
@@ -206,7 +248,9 @@ else:
                                     [
                                         html.H4(
                                             "Average # changes per week per PR",
-                                            style={"textAlign": "center",},
+                                            style={
+                                                "textAlign": "center",
+                                            },
                                         ),
                                         dcc.Graph(
                                             id="github-changes-in-pr-by-week",

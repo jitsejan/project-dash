@@ -53,43 +53,43 @@ navbar = dbc.Navbar(
     className="mb-5",
 )
 
-layout = html.Div(
-    [
-        html.Div(
-            [
-                html.H1(children="Project overview", style={"textAlign": "center",}),
-                dbc.Row(
-                    [dbc.Col(html.Img(src="assets/github.PNG", className="row-img")),]
-                ),
-                dbc.Row([dbc.Col(github.open_pulls_table),], align="center",),
-                dbc.Row(
-                    [dbc.Col(html.Img(src="assets/jira.PNG", className="row-img")),]
-                ),
-                dbc.Row(
-                    dbc.Col(
-                        html.H3(children="In progress", style={"textAlign": "center",}),
-                    ),
-                ),
-                dbc.Row([dbc.Col(jira.open_issues_table),], align="center",),
-                dbc.Row(
-                    dbc.Col(
-                        html.H3(children="In review", style={"textAlign": "center",}),
-                    ),
-                ),
-                dbc.Row([dbc.Col(jira.review_issues_table),], align="center",),
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.H3(children="Todo", style={"textAlign": "center",}),
-                        ),
-                    ],
-                    align="center",
-                ),
-                dbc.Row([dbc.Col(jira.todo_issues_table),], align="center",),
-            ]
-        )
-    ]
-)
+layout = html.Div()
+#     [
+#         html.Div(
+#             [
+#                 html.H1(children="Project overview", style={"textAlign": "center",}),
+#                 dbc.Row(
+#                     [dbc.Col(html.Img(src="assets/github.PNG", className="row-img")),]
+#                 ),
+#                 dbc.Row([dbc.Col(github.open_pulls_table),], align="center",),
+#                 dbc.Row(
+#                     [dbc.Col(html.Img(src="assets/jira.PNG", className="row-img")),]
+#                 ),
+#                 dbc.Row(
+#                     dbc.Col(
+#                         html.H3(children="In progress", style={"textAlign": "center",}),
+#                     ),
+#                 ),
+#                 dbc.Row([dbc.Col(jira.open_issues_table),], align="center",),
+#                 dbc.Row(
+#                     dbc.Col(
+#                         html.H3(children="In review", style={"textAlign": "center",}),
+#                     ),
+#                 ),
+#                 dbc.Row([dbc.Col(jira.review_issues_table),], align="center",),
+#                 dbc.Row(
+#                     [
+#                         dbc.Col(
+#                             html.H3(children="Todo", style={"textAlign": "center",}),
+#                         ),
+#                     ],
+#                     align="center",
+#                 ),
+#                 dbc.Row([dbc.Col(jira.todo_issues_table),], align="center",),
+#             ]
+#         )
+#     ]
+# )
 
 app.layout = dbc.Container(
     [
@@ -145,6 +145,7 @@ def toggle_active_links(pathname):
     elif pathname == "/github":
         return [False, False, True]
     return False, False, False
+
 
 app.title = "Project Dash"
 

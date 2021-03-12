@@ -15,11 +15,11 @@ else:
     pulls["changes"] = pulls["deletions"] + pulls["additions"]
     pulls["duration"] = (pulls["closed_at"] - pulls["created_at"]).dt.days
 
-    done_pulls = pulls[pulls['closed_at'].notnull()]
-    num_done = done_pulls.count()['number']
-    duration_stats = done_pulls.agg({'duration': ['average', 'max', 'min']}).to_dict()['duration']
-
-
+    done_pulls = pulls[pulls["closed_at"].notnull()]
+    num_done = done_pulls.count()["number"]
+    duration_stats = done_pulls.agg({"duration": ["average", "max", "min"]}).to_dict()[
+        "duration"
+    ]
 
     # Duration of pull requests | Scatter
     fig_done_pulls_scatter = px.scatter(
@@ -33,15 +33,15 @@ else:
     )
     fig_done_pulls_scatter.update_layout(
         xaxis={
-            'title': "Closing date",
+            "title": "Closing date",
         },
         yaxis={
-            'title': "Duration (days)",
+            "title": "Duration (days)",
         },
         paper_bgcolor="rgba(255,255,255,1)",
         plot_bgcolor="rgba(0,0,0,0.1)",
-        legend_title_text='',
-        xaxis_tickformat = '%d %b <br>%Y',
+        legend_title_text="",
+        xaxis_tickformat="%d %b <br>%Y",
     )
     fig_done_pulls_scatter.update_xaxes(
         tickangle=45,
@@ -82,8 +82,12 @@ else:
         done_pulls, x="number", y="duration", color="user", hover_data={"title"}
     )
     fig_done_pulls.update_layout(
-        xaxis=dict(title="Pull request #",),
-        yaxis=dict(title="Closing time [hours]",),
+        xaxis=dict(
+            title="Pull request #",
+        ),
+        yaxis=dict(
+            title="Closing time [hours]",
+        ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -93,8 +97,12 @@ else:
         pulls, x="number", y="changes", color="user", hover_data={"title"}
     )
     fig_changes_in_pr.update_layout(
-        xaxis=dict(title="Pull request #",),
-        yaxis=dict(title="Number of changes",),
+        xaxis=dict(
+            title="Pull request #",
+        ),
+        yaxis=dict(
+            title="Number of changes",
+        ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -108,8 +116,13 @@ else:
     mean_duration["week"] = mean_duration["closed_at"].dt.strftime("%W")
     fig_duration_pr_by_week = px.line(mean_duration, x="week", y="duration")
     fig_duration_pr_by_week.update_layout(
-        xaxis=dict(title="Week #", dtick=1,),
-        yaxis=dict(title="Duration [hour]",),
+        xaxis=dict(
+            title="Week #",
+            dtick=1,
+        ),
+        yaxis=dict(
+            title="Duration [hour]",
+        ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -126,7 +139,9 @@ else:
     fig_changes_in_pr_by_week = px.line(mean_pulls, x="week", y="changes")
     fig_changes_in_pr_by_week.update_layout(
         xaxis=dict(title="Week #", dtick=1),
-        yaxis=dict(title="Number of changes",),
+        yaxis=dict(
+            title="Number of changes",
+        ),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -135,7 +150,9 @@ else:
     # Tables
     def get_table(dataframe):
         return dt.DataTable(
-            columns=[{"name": i, "id": i, "deletable": False} for i in dataframe.columns],
+            columns=[
+                {"name": i, "id": i, "deletable": False} for i in dataframe.columns
+            ],
             data=dataframe.to_dict("records"),
             css=[
                 {
@@ -145,8 +162,9 @@ else:
             ],
         )
 
-
     open_filter = pulls.state == "open"
     pulls.loc[open_filter, "duration"] = datetime.now() - pulls["created_at"]
-    open_pulls = pulls[open_filter][["number", "title", "user", "created_at", "duration"]]
+    open_pulls = pulls[open_filter][
+        ["number", "title", "user", "created_at", "duration"]
+    ]
     open_pulls_table = get_table(open_pulls)

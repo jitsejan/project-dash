@@ -41,7 +41,10 @@ class JiraRetriever:
     def get_issues_dataframe(self):
         df = self._get_frame_from_issues(self._get_issues_for_project())
         timecols = ["created", "updated"]
-        df[timecols] = df[timecols].apply(pd.to_datetime)
+        df[timecols] = df[timecols].apply(
+            lambda col: pd.to_datetime(col, errors="ignore", utc=True)
+        )
+        print(df.dtypes)
         return df
 
     def get_sprints_dataframe(self):
@@ -61,27 +64,29 @@ class JiraRetriever:
     def _get_history_for_issue(histories):
         changes = []
         for history in histories:
-            for item in history.get('items'):
-                if item.get('field') == 'status':
-                    changes.append({
-                        'from': item.get('fromString'),
-                        'to': item.get('toString'),
-                        'date': history.get('created'),
-                    })
-        return changes 
+            for item in history.get("items"):
+                if item.get("field") == "status":
+                    changes.append(
+                        {
+                            "from": item.get("fromString"),
+                            "to": item.get("toString"),
+                            "date": history.get("created"),
+                        }
+                    )
+        return changes
 
     def _get_issues_for_project(self, project=None):
         return self.jira.search_issues(
             f"project={project if project else self.project}",
             maxResults=None,
-            expand='changelog'
+            expand="changelog",
         )
 
     def _get_issues_for_sprint(self, sprint):
         return self.jira.search_issues(f"Sprint = '{sprint}'")
 
     def _get_issue_with_changelog(self, issue):
-        return self.jira.issue(issue=issue, expand='changelog')
+        return self.jira.issue(issue=issue, expand="changelog")
 
     def _get_jira_client(self):
         return JIRA(self.url, basic_auth=(self.user, self.password))
@@ -99,7 +104,7 @@ class JiraRetriever:
         df.columns = [
             col.replace("fields.", "").replace(".", "_").lower() for col in df.columns
         ]
-        df['history'] = df['changelog_histories'].apply(self._get_history_for_issue)
+        df["history"] = df["changelog_histories"].apply(self._get_history_for_issue)
         df["sprint"] = df["sprint"].apply(lambda x: x[0] if x is not None else x)
         df["sprint_name"] = df["sprint"].str.extract(
             r"name=(?P<sprint_name>.*),startDate"
