@@ -1,14 +1,15 @@
+import math
+
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import math
 
 from app import app
 from jiragraphs import *
 
 colors = {
-    'bug': "255, 86, 48",
+    "bug": "255, 86, 48",
     "story": "54, 179, 126",
 }
 
@@ -19,7 +20,11 @@ layout = html.Div(
             [
                 html.Img(
                     src="assets/jira.PNG",
-                    style={"width": "200px", "margin": "0px auto", "display": "block",},
+                    style={
+                        "width": "200px",
+                        "margin": "0px auto",
+                        "display": "block",
+                    },
                 )
             ]
         ),
@@ -30,71 +35,99 @@ layout = html.Div(
                         html.Div(
                             [
                                 html.H4(
-                                    f"Number of days to close a ticket", style={"textAlign": "center",}
+                                    f"Number of days to close a ticket",
+                                    style={
+                                        "textAlign": "center",
+                                    },
                                 ),
                                 dbc.Row(
-                                [
-                                    dbc.Col(
-                                        html.Div(
-                                            [
-                                               dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            html.Div(
                                                 [
-                                                    dbc.Col(
-                                                        html.H1(
-                                                            f"{math.ceil(duration_stats['average'])}",
-                                                        ),
-                                                        id="day-average",
-                                                        width={"size": 1, "offset": 2},
+                                                    dbc.Row(
+                                                        [
+                                                            dbc.Col(
+                                                                html.H1(
+                                                                    f"{math.ceil(duration_stats['average'])}",
+                                                                ),
+                                                                id="day-average",
+                                                                width={
+                                                                    "size": 1,
+                                                                    "offset": 2,
+                                                                },
+                                                            ),
+                                                            dbc.Col(
+                                                                html.Div(
+                                                                    [
+                                                                        html.H1(
+                                                                            "Days on average"
+                                                                        ),
+                                                                        html.H2(
+                                                                            "From Created to Done"
+                                                                        ),
+                                                                    ],
+                                                                    id="day-average-title",
+                                                                ),
+                                                                width={
+                                                                    "size": 9,
+                                                                    "offset": 0,
+                                                                },
+                                                            ),
+                                                        ]
                                                     ),
-                                                    dbc.Col(
-                                                        html.Div([
-                                                            html.H1("Days on average"),
-                                                            html.H2("From Created to Done"),
-                                                        ],
-                                                        id="day-average-title"),
-                                                        width={"size": 9, "offset": 0},
-                                                    )
-                                                ]),
-                                            ]
+                                                ]
+                                            ),
+                                            width=6,
+                                            lg=6,
+                                            md=6,
+                                            xs=12,
                                         ),
-                                        width=6,
-                                        lg=6,
-                                        md=6,
-                                        xs=12,
-                                    ),
-                                    dbc.Col(
-                                       dbc.ListGroup(
-                                        [
-                                            dbc.ListGroupItem(
+                                        dbc.Col(
+                                            dbc.ListGroup(
                                                 [
-                                                    html.Img(
-                                                        src="assets/jira_bug.SVG",
-                                                        style={"width": "64px"},
+                                                    dbc.ListGroupItem(
+                                                        [
+                                                            html.Img(
+                                                                src="assets/jira_bug.SVG",
+                                                                style={"width": "64px"},
+                                                            ),
+                                                            dbc.ListGroupItemHeading(
+                                                                f"{num_done['Bug'] if 'Bug' in num_done.keys() else 0}"
+                                                            ),
+                                                            dbc.ListGroupItemText(
+                                                                "bugs"
+                                                            ),
+                                                        ]
                                                     ),
-                                                    dbc.ListGroupItemHeading(f"{num_done['Bug']}"),
-                                                    dbc.ListGroupItemText("bugs"),
-                                                ]
-                                            ),
-                                            dbc.ListGroupItem(
-                                                [
-                                                    html.Img(
-                                                        src="assets/jira_story.SVG",
-                                                        style={"width": "64px"},
+                                                    dbc.ListGroupItem(
+                                                        [
+                                                            html.Img(
+                                                                src="assets/jira_story.SVG",
+                                                                style={"width": "64px"},
+                                                            ),
+                                                            dbc.ListGroupItemHeading(
+                                                                f"{num_done['Story']} "
+                                                            ),
+                                                            dbc.ListGroupItemText(
+                                                                "stories"
+                                                            ),
+                                                        ]
                                                     ),
-                                                    dbc.ListGroupItemHeading(f"{num_done['Story']} "),
-                                                    dbc.ListGroupItemText("stories"),
-                                                ]
+                                                ],
+                                                horizontal=True,
                                             ),
-                                        ], horizontal=True),
-                                        width=6,
-                                        lg=6,
-                                        md=6,
-                                        xs=12,
-                                    ),
-                                ]),
+                                            width=6,
+                                            lg=6,
+                                            md=6,
+                                            xs=12,
+                                        ),
+                                    ]
+                                ),
                                 dcc.Graph(
-                                    id="jira-done-issues", figure=fig_done_issues,
-                                )
+                                    id="jira-done-issues",
+                                    figure=fig_done_issues,
+                                ),
                             ]
                         ),
                         width=12,
@@ -103,7 +136,8 @@ layout = html.Div(
                         xs=12,
                     )
                 )
-            ], className="graph-container"
+            ],
+            className="graph-container",
         ),
         html.Div(
             [
@@ -112,11 +146,15 @@ layout = html.Div(
                         html.Div(
                             [
                                 html.H4(
-                                    f"Days per state", style={"textAlign": "center",}
+                                    f"Days per state",
+                                    style={
+                                        "textAlign": "center",
+                                    },
                                 ),
                                 dcc.Graph(
-                                    id="jira-par-process", figure=fig_par_process,
-                                )
+                                    id="jira-par-process",
+                                    figure=fig_par_process,
+                                ),
                             ]
                         ),
                         width=12,
@@ -125,7 +163,8 @@ layout = html.Div(
                         xs=12,
                     )
                 )
-            ], className="graph-container"
+            ],
+            className="graph-container",
         ),
     ]
 )

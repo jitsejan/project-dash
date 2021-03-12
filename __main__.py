@@ -42,7 +42,9 @@ def main(config):
             print(issues)
             print(sprints)
     if config["github_retrieve"].get():
-        retr = GitHubRetriever(repos=config["github"]["repos"].as_str_seq(),)
+        retr = GitHubRetriever(
+            repos=config["github"]["repos"].as_str_seq(),
+        )
         branches = retr.get_branches_dataframe()
         pulls = retr.get_pulls_dataframe()
         if config["store"]:
