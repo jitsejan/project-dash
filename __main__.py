@@ -6,7 +6,7 @@ import os
 import confuse
 
 from githubretriever import GitHubRetriever
-from jiraretriever import JiraRetriever
+from connector_party.jiraretriever import JiraRetriever
 
 APPNAME = "PROJECTDASH"
 
@@ -30,8 +30,7 @@ def get_config():
 def main(config):
     if config["jira_retrieve"].get():
         retr = JiraRetriever(
-            board_id=config["jira"]["board_id"].get(int),
-            project=config["jira"]["project"].get(),
+            project_key=config["jira"]["project"].get(),
         )
         sprints = retr.get_sprints_dataframe()
         issues = retr.get_issues_dataframe()
