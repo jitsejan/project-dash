@@ -1,7 +1,10 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+import pandas as pd
 from dash.dependencies import Input, Output, State
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 from app import app
 from apps import github, jira
@@ -150,4 +153,4 @@ def toggle_active_links(pathname):
 app.title = "Project Dash"
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)
