@@ -4,9 +4,9 @@ import json
 import os
 
 import confuse
+from connector_party.jiraretriever import JiraRetriever
 
 from githubretriever import GitHubRetriever
-from connector_party.jiraretriever import JiraRetriever
 
 APPNAME = "PROJECTDASH"
 
@@ -32,8 +32,8 @@ def main(config):
         retr = JiraRetriever(
             project_key=config["jira"]["project"].get(),
         )
-        sprints = retr.get_sprints_dataframe()
-        issues = retr.get_issues_dataframe()
+        sprints = retr.get_issue_dataframe()
+        issues = retr.get_issue_dataframe()
         if config["store"]:
             issues.to_pickle("jira_issues.df")
             sprints.to_pickle("jira_sprints.df")

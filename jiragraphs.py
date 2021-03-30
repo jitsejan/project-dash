@@ -15,56 +15,65 @@ preffont = dict(
     # color=colors['graphtext']
 )
 issues = pd.read_pickle("jira_issues.df")
-
 # Issues per person overall
-issues_per_person = issues.groupby("assignee_displayname", as_index=False).count()[
-    ["assignee_displayname", "key"]
+issues_per_person = issues.groupby("assignee", as_index=False).count()[
+    ["assignee", "key"]
 ]
-fig_issues_per_person = px.pie(
-    issues_per_person, values="key", names="assignee_displayname"
-)
+fig_issues_per_person = px.pie(issues_per_person, values="key", names="assignee")
 fig_issues_per_person.update_layout(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=preffont
 )
 
 # Stats for finished issues
-done_issues = issues[
-    (issues["status_name"] == "Done") & (issues["assignee_displayname"].notnull())
-]
+done_issues = issues[(issues["status"] == "Done") & (issues["assignee"].notnull())]
 done_issues["estimate"].fillna(1, inplace=True)
-# done_issues["duration"] = (done_issues["updated"] - done_issues["created"]).dt.days
 done_issues.loc[:, ["duration"]] = (
     done_issues["updated"] - done_issues["created"]
 ).dt.days
 
-# done_issues = done_issues[done_issues["assignee_displayname"] != ""][
-#     ["sprint_name", "id", "key", "summary", "assignee_displayname", "duration"]
-# ].sort_values("id")
-# fig_done_issues = px.bar(
-#     done_issues,
-#     x="duration",
-#     y="key",
-#     hover_data={"summary"},
-#     # orientation="h",
-# )
-# fig_done_issues.update_layout(
-#     xaxis=dict(title="Duration (days)",),
-#     yaxis=dict(title="Ticket", autorange="reversed",),
-#     paper_bgcolor="rgba(0,0,0,0)",
-#     plot_bgcolor="rgba(0,0,0,0)",
-#     font=preffont,
-# )
+done_issues = done_issues[done_issues["assignee"] != ""][
+    [
+        "updated",
+        "sprint",
+        "id",
+        "key",
+        "summary",
+        "assignee",
+        "duration",
+        "issuetype",
+        "estimate",
+    ]
+].sort_values("id")
+fig_done_issues = px.bar(
+    done_issues,
+    x="duration",
+    y="key",
+    hover_data={"summary"},
+    # orientation="h",
+)
+fig_done_issues.update_layout(
+    xaxis=dict(
+        title="Duration (days)",
+    ),
+    yaxis=dict(
+        title="Ticket",
+        autorange="reversed",
+    ),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=preffont,
+)
 
-num_done = done_issues.groupby("issuetype_name").count()["key"].to_dict()
+num_done = done_issues.groupby("issuetype").count()["key"].to_dict()
 duration_stats = done_issues.agg({"duration": ["average", "max", "min"]}).to_dict()[
     "duration"
 ]
-
+done_issues["estimate"] = done_issues["estimate"].astype("float")
 fig_done_issues = px.scatter(
     data_frame=done_issues,
     x="updated",
     y="duration",
-    color="issuetype_name",
+    color="issuetype",
     hover_data={"summary"},
     size="estimate",
     color_discrete_map=color_discrete_map,
@@ -91,7 +100,7 @@ y = total_fig["data"][1]["y"]
 fig_done_issues.add_trace(go.Scatter(x=x, y=y, name=f"Avg #days combined"))
 
 grouped_fig = px.scatter(
-    done_issues, x="updated", y="duration", color="issuetype_name", trendline="lowess"
+    done_issues, x="updated", y="duration", color="issuetype", trendline="lowess"
 )
 for group in grouped_fig["data"]:
     if not isinstance(group["x"][0], datetime):
@@ -115,32 +124,26 @@ def get_table(dataframe):
     )
 
 
-open_filter = (issues.status_name == "In Progress") & (issues.issuetype_name == "Story")
+open_filter = (issues.status == "In Progress") & (issues.issuetype == "Story")
 issues.loc[open_filter, "duration"] = datetime.now(pytz.utc) - issues["updated"]
-open_issues = issues[open_filter][
-    ["key", "assignee_displayname", "updated", "duration"]
-]
+open_issues = issues[open_filter][["key", "assignee", "updated", "duration"]]
 open_issues_table = get_table(open_issues)
 
-review_filter = (issues.status_name == "In Review") & (issues.issuetype_name == "Story")
+review_filter = (issues.status == "In Review") & (issues.issuetype == "Story")
 issues.loc[review_filter, "duration"] = datetime.now(pytz.utc) - issues["updated"]
-review_issues = issues[review_filter][
-    ["key", "assignee_displayname", "updated", "duration"]
-]
+review_issues = issues[review_filter][["key", "assignee", "updated", "duration"]]
 review_issues_table = get_table(review_issues)
 
-todo_filter = (issues.status_name == "To Do") & (issues.issuetype_name == "Story")
+todo_filter = (issues.status == "To Do") & (issues.issuetype == "Story")
 issues.loc[todo_filter, "duration"] = datetime.now(pytz.utc) - issues["updated"]
-todo_issues = issues[todo_filter][
-    ["key", "assignee_displayname", "updated", "duration"]
-]
+todo_issues = issues[todo_filter][["key", "assignee", "updated", "duration"]]
 todo_issues_table = get_table(todo_issues)
 
 # Parallel coordinates
 # --------------------
 # Normalize the historical data
 hdf = pd.json_normalize(
-    issues["history"]
+    issues["histories"]
     .apply(pd.Series)
     .stack()
     .to_frame("histories")
@@ -148,24 +151,25 @@ hdf = pd.json_normalize(
     .rename(columns={"level_0": "index"})
     .to_dict(orient="records")
 ).set_index("index")
-hdf = hdf[hdf["histories.from"] != hdf["histories.to"]]
-hdf = issues.join(hdf).drop("history", axis=1)
+
+hdf = hdf[hdf["histories.old"] != hdf["histories.new"]]
+hdf = issues.join(hdf).drop("histories", axis=1)
 # Add transition column
-hdf["transition"] = hdf["histories.from"] + "-" + hdf["histories.to"]
+hdf["transition"] = hdf["histories.old"] + "-" + hdf["histories.new"]
 # Add the Created column as additional transition
 cdf = hdf[["key", "created"]]
-hdf.loc[:, "histories.date"] = pd.to_datetime(hdf["histories.date"])
-cdf.loc[:, "histories.date"] = pd.to_datetime(cdf["created"])
+hdf.loc[:, "histories.created"] = pd.to_datetime(hdf["histories.created"], utc=True)
+cdf.loc[:, "histories.created"] = pd.to_datetime(cdf["created"], utc=True)
 cdf.loc[:, ["transition"]] = "Created"
 cdf.drop("created", axis=1, inplace=True)
 # Combine the two transition frames
-tdf = hdf[["key", "histories.date", "transition"]]
+tdf = hdf[["key", "histories.created", "transition"]]
 tdf = pd.concat([tdf, cdf])
-tdf.dropna(subset=["histories.date"], inplace=True)
-tdf["histories.date"] = pd.to_datetime(tdf["histories.date"], utc=True)
+tdf.dropna(subset=["histories.created"], inplace=True)
+tdf["histories.created"] = pd.to_datetime(tdf["histories.created"], utc=True)
 tdf.drop_duplicates(["key", "transition"], inplace=True)
 # Pivot the data and calculate the three states
-pdf = tdf.pivot(index="key", values="histories.date", columns="transition")
+pdf = tdf.pivot(index="key", values="histories.created", columns="transition")
 mask = (
     pdf["In Progress-Testing"].notnull()
     & pdf["To Do-In Progress"].notnull()
@@ -181,9 +185,9 @@ mdf = mdf[["in_todo", "in_progress", "in_review"]]
 mdf = mdf.applymap(lambda x: x.days)
 mdf.reset_index(inplace=True)
 # Add issuetype to table
-mdf = mdf.join(hdf[["issuetype_name"]]).drop_duplicates()
+mdf = mdf.join(hdf[["issuetype"]]).drop_duplicates()
 # Add is_bug boolean to table
-mdf["is_bug"] = mdf["issuetype_name"] == "Bug"
+mdf["is_bug"] = mdf["issuetype"] == "Bug"
 # Calculate the min and max values
 rmin = mdf[["in_todo", "in_progress", "in_review"]].values.min()
 rmax = mdf[["in_todo", "in_progress", "in_review"]].values.max()
