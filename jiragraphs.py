@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime
 
-import dash_table as dt
+from dash import dash_table as dt
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
