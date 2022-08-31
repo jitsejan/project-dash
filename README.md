@@ -41,3 +41,11 @@ Set the following variables:
 ```bash
 GITHUB_TOKEN=xyz
 ```
+
+And for the `connector-party` per README.md:
+
+```bash
+JIRA_API_KEY=xyz
+JIRA_URL=xyz.atlassian.net
+JIRA_USER=xyz@xyz.net
+```
