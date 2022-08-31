@@ -2,3 +2,6 @@ notebooks
 __pycache__
 config.yaml
 *.df
+.ipynb_checkpoints
+*.ipynb
+*.parquet

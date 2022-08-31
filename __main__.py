@@ -35,8 +35,8 @@ def main(config):
         sprints = retr.get_issue_dataframe()
         issues = retr.get_issue_dataframe()
         if config["store"]:
-            issues.to_pickle("jira_issues.df")
-            sprints.to_pickle("jira_sprints.df")
+            issues.to_parquet("jira_issues.parquet")
+            sprints.to_parquet("jira_sprints.parquet")
         if config["output"]:
             print(issues)
             print(sprints)

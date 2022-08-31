@@ -1,4 +1,6 @@
 confuse==2.0.0
-connector-party==0.6.0
-PyGithub==1.55
+connector-party==0.7.0
 dash_bootstrap_components==1.2.1
+pyarrow==9.0.0
+PyGithub==1.55
+statsmodels==0.13.2
