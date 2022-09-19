@@ -169,11 +169,12 @@ tdf.dropna(subset=["histories.created"], inplace=True)
 tdf["histories.created"] = pd.to_datetime(tdf["histories.created"], utc=True)
 tdf.drop_duplicates(["key", "transition"], inplace=True)
 # Pivot the data and calculate the three states
+print(tdf['transition'].unique())
 pdf = tdf.pivot(index="key", values="histories.created", columns="transition")
 mask = (
-    pdf["In Progress-Testing"].notnull()
-    & pdf["To Do-In Progress"].notnull()
-    & pdf["In Progress-Testing"].notnull()
+    # pdf["In Progress-Testing"].notnull()
+    pdf["To Do-In Progress"].notnull()
+    # & pdf["In Progress-Testing"].notnull()
 )
 mdf = pdf[mask]
 mdf.loc[:, "in_todo"] = mdf["To Do-In Progress"] - mdf["Created"]
