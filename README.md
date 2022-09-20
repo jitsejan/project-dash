@@ -29,8 +29,23 @@ I use `confuse` to handle the configuration. This requires three steps:
         project: ABC
         board_id: 1234
     github:
-    repos:
-        myuser/myrepo-1
-        myuser/myrepo-2
+        repos:
+           myuser/myrepo-1
+           myuser/myrepo-2
     ```
 
+### Environment variables
+
+Set the following variables:
+
+```bash
+GITHUB_TOKEN=xyz
+```
+
+And for the `connector-party` per README.md:
+
+```bash
+JIRA_API_KEY=xyz
+JIRA_URL=xyz.atlassian.net
+JIRA_USER=xyz@xyz.net
+```

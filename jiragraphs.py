@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime
 
-import dash_table as dt
+from dash import dash_table as dt
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -169,11 +169,12 @@ tdf.dropna(subset=["histories.created"], inplace=True)
 tdf["histories.created"] = pd.to_datetime(tdf["histories.created"], utc=True)
 tdf.drop_duplicates(["key", "transition"], inplace=True)
 # Pivot the data and calculate the three states
+print(tdf['transition'].unique())
 pdf = tdf.pivot(index="key", values="histories.created", columns="transition")
 mask = (
-    pdf["In Progress-Testing"].notnull()
-    & pdf["To Do-In Progress"].notnull()
-    & pdf["In Progress-Testing"].notnull()
+    # pdf["In Progress-Testing"].notnull()
+    pdf["To Do-In Progress"].notnull()
+    # & pdf["In Progress-Testing"].notnull()
 )
 mdf = pdf[mask]
 mdf.loc[:, "in_todo"] = mdf["To Do-In Progress"] - mdf["Created"]
